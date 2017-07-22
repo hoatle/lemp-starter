@@ -1,0 +1,27 @@
+{
+  "provisioners": [{
+    "_id": "0",
+    "_ua_cookbooks_path": [
+      "workspace/lemp-starter/dev-setup/chef/main-cookbooks"
+    ],
+    "_ua_run_list": [
+      "lemp-starter"
+    ],
+    "json": {
+      "acme": {
+        "lemp-starter": {
+          "project_guest_path": "/home/vagrant/workspace/lemp-starter"
+        }
+      }
+    }
+  }],
+  "plugins": [{
+    "_id": "2",
+    "options": {
+      "_ua_aliases": [
+        "dev.lemp.acme.dev", "review.lemp.acme.dev", "lemp.acme.dev",
+        "phpmyadmin.lemp.acme.dev"
+      ]
+    }
+  }]
+}

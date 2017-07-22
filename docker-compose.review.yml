@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  nginx-review:
+    image: ${NGINX_REVIEW_IMAGE:-nginx:1.13.3-alpine}
+    environment:
+      VIRTUAL_HOST: ${NGINX_REVIEW_VIRTUAL_HOST:-review.lemp.acme.dev, ~^review\.lemp\..*\.xip\.io}
+      HTTPS_METHOD: noredirect # support both http and https
+    depends_on:
+      - app-review
+    links:
+      - app-review
+    volumes:
+      - ./nginx/conf.d/default_review.conf:/etc/nginx/conf.d/default.conf
+      - ./html:/usr/share/nginx/html
+    restart: unless-stopped
+    network_mode: bridge
+
+  app-review:
+    image: ${APP_REVIEW_IMAGE}
+    env_file:
+      - .env-common
+      - .env-review
+    depends_on:
+      - db
+    links:
+      - db
+    network_mode: bridge
