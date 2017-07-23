@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  nginx-prod:
+    image: ${NGINX_PROD_IMAGE:-nginx:1.13.3-alpine}
+    environment:
+      VIRTUAL_HOST: ${NGINX_PROD_VIRTUAL_HOST:-lemp.acme.dev, ~^lemp\..*\.xip\.io}
+      HTTPS_METHOD: noredirect # support both http and https
+    depends_on:
+      - app-prod
+    links:
+      - app-prod
+    volumes:
+      - ./nginx/conf.d/default_prod.conf:/etc/nginx/conf.d/default.conf
+      - ./html:/var/www/html
+    restart: unless-stopped
+    network_mode: bridge
+
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CI_BUILD_ID: ${CI_BUILD_ID}
+        CI_BUILD_REF: ${CI_BUILD_REF}
+        CI_BUILD_TIME: ${CI_BUILD_TIME}
+        CI_REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}
+    image: ${APP_PROD_IMAGE:-acme101/lemp-starter:develop}
+    env_file:
+      - .env-common
+      - .env-prod
+    depends_on:
+      - db
+    links:
+      - db
+    network_mode: bridge
