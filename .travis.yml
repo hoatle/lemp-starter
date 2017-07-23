@@ -38,10 +38,14 @@ before_install:
   # - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
   # - helm version --client
 before_script:
+- export CI_PROJECT_NAMESPACE=`echo $CI_PROJECT_NAME | cut -d"/" -f1`;
+- export CI_PROJECT_APP=`echo $CI_PROJECT_NAME | cut -d"/" -f2`;
+- export DOCKER_USER=${DOCKER_USER:-$CI_PROJECT_NAMESPACE}
+- export DOCKER_REPO=${DOCKER_REPO:-$CI_PROJECT_APP}
 - export CI_REGISTRY_IMAGE=$DOCKER_USER/$DOCKER_REPO
 - export IMG_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH | sed -e 's/[\/]/-/g' | sed -e 's/[\#]//g'; fi`
 - export APP_PROD_IMAGE=$CI_REGISTRY_IMAGE:$IMG_TAG
-- export CI_PROJECT_NAMESPACE=`echo $CI_PROJECT_NAME | cut -d"/" -f1`;
+
 script:
 - docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --force-rm --pull app-prod;
 after_success:
