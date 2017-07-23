@@ -13,4 +13,3 @@ echo "Success: A proper connection to DB was made!" . PHP_EOL;
 echo "Host information: " . mysqli_get_host_info($link) . PHP_EOL;
 
 mysqli_close($link);
-?>
