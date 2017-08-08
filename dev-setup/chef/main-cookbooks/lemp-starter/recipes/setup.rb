@@ -1,6 +1,6 @@
 #
 # Cookbook:: lemp-starter
-# Recipe:: setup_lemp_starter
+# Recipe:: setup
 #
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
