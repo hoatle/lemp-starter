@@ -2,62 +2,55 @@ version: '3'
 
 services:
 
-  nginx-dev:
-    image: ${NGINX_DEV_IMAGE:-nginx:1.13.3-alpine}
-    environment:
-      VIRTUAL_HOST: ${NGINX_DEV_VIRTUAL_HOST:-dev.lemp.acme.dev, ~^dev\.lemp\..*\.xip\.io}
-      HTTPS_METHOD: noredirect # support both http and https
-    depends_on:
-      - app-dev
-    links:
-      - app-dev
-    volumes:
-      - ./nginx/conf.d/default_dev.conf:/etc/nginx/conf.d/default.conf
-      - ./html:/var/www/html
-    restart: unless-stopped
-    network_mode: bridge
-
   app-dev:
-    image: ${APP_DEV_IMAGE:-php:7.0.21-fpm-alpine}
+    image: ${APP_DEV_IMAGE:-richarvey/nginx-php-fpm:1.2.3}
     working_dir: /opt/app
     command: sh run-dev.sh
+    environment:
+      PORT: 8080
+      VIRTUAL_HOST: ${APP_DEV_VIRTUAL_HOST:-dev.lemp.acme.dev, ~^dev\.lemp\..*\.xip\.io}
+      VIRTUAL_PORT: 8080
+      HTTPS_METHOD: noredirect # support both http and https    
     env_file:
       - .env-common
       - .env-dev
+    ports:
+      - "8080"
     depends_on:
-      - db
+      - db-dev
     links:
-      - db
+      - db-dev:db
     volumes:
-      - ./html:/var/www/html
+      - ./src:/var/www/html
       - ./run-dev.sh:/opt/app/run-dev.sh
+      - ./nginx:/opt/app/nginx
     restart: unless-stopped
     network_mode: bridge
 
-  phpmyadmin:
-    image: ${PHP_MY_ADMIN_IMAGE:-phpmyadmin/phpmyadmin:4.7.3-1}
+  phpmyadmin-dev:
+    image: ${PHP_MY_ADMIN_DEV_IMAGE:-phpmyadmin/phpmyadmin:4.7.3-1}
     environment:
-      VIRTUAL_HOST: ${PHP_MY_ADMIN_VIRTUAL_HOST:-phpmyadmin.lemp.acme.dev, ~^phpmyadmin\.lemp.\..*\.xip\.io}
+      VIRTUAL_HOST: ${PHP_MY_ADMIN_DEV_VIRTUAL_HOST:-phpmyadmin-dev.lemp.acme.dev, ~^phpmyadmin-dev\.lemp.\..*\.xip\.io}
       HTTPS_METHOD: noredirect # support both http and https
     depends_on:
-      - db
+      - db-dev
     links:
-      - db
+      - db-dev:db
     restart: unless-stopped
     network_mode: bridge
 
-  db:
-    image: ${DB_IMAGE:-mariadb:10.2.7}
+  db-dev:
+    image: ${DB_DEV_IMAGE:-mariadb:10.2.7}
     environment:
       MYSQL_ROOT_PASSWORD: teracy # login with root:teracy as root user
       MYSQL_DATABASE: app
       MYSQL_USER: teracy
       MYSQL_PASSWORD: teracy # login with teracy:teracy as user of the "app" database
     volumes:
-      - db:/var/lib/mysql
+      - db-dev:/var/lib/mysql
     restart: unless-stopped
     network_mode: bridge
 
 volumes:
-  db:
+  db-dev:
     driver: local

@@ -1,4 +1,4 @@
-FROM php:7.0.21-fpm-alpine
+FROM richarvey/nginx-php-fpm:1.2.3
 
 LABEL authors="hoatle <hoatle@teracy.com>"
 
@@ -18,10 +18,10 @@ ENV CI_BUILD_ID=$CI_BUILD_ID CI_BUILD_REF=$CI_BUILD_REF CI_REGISTRY_IMAGE=$CI_RE
 
 WORKDIR $APP
 
-RUN docker-php-ext-install mysqli
-
 ADD run-prod.sh $APP/
 
-ADD html /usr/share/nginx/html/
+ADD nginx $APP/nginx/
+
+ADD src /var/www/html/
 
 CMD ["sh", "run-prod.sh"]

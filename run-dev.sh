@@ -19,9 +19,20 @@
 #
 #docker-php-source delete
 
-docker-php-ext-install mysqli
+#docker-php-ext-install mysqli
 
 #curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
 #    && rm -rf /tmp/*
 
-php-fpm
+# nginx dynamically listen to defined $PORT
+# if no $PORT specified, listen on port 80
+
+if [ -z "$PORT" ]; then
+  export PORT=80;
+fi
+
+echo "nginx listening on the port: $PORT";
+
+envsubst '${PORT}' <nginx/sites-available/default.tpl.conf >/etc/nginx/sites-available/default.conf
+
+sh /start.sh

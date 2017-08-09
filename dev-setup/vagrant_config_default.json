@@ -19,8 +19,9 @@
     "_id": "2",
     "options": {
       "_ua_aliases": [
-        "dev.lemp.acme.dev", "review.lemp.acme.dev", "lemp.acme.dev",
-        "phpmyadmin.lemp.acme.dev"
+        "dev.lemp.acme.dev", "phpmyadmin-dev.lemp.acme.dev",
+        "lemp.acme.dev",
+        "review.lemp.acme.dev", "phpmyadmin-review.lemp.acme.dev"
       ]
     }
   }]
